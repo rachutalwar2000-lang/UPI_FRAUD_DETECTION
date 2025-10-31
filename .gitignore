@@ -1,0 +1,16 @@
+# Node modules
+node_modules/
+
+# Python virtual environment
+venv/
+
+# Compiled files
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+
+# Build and dependency files
+*.pkl
+.DS_Store
