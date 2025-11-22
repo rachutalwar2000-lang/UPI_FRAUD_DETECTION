@@ -1,11 +1,13 @@
-// web_app/client/src/components/History.js
+// web_app/client/src/components/History.js - Transaction Detail Modal section
+// Replace the DialogActions in the TransactionDetailModal
+
 import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Tabs, Tab, Paper, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Chip, IconButton, Tooltip,
   TablePagination, TextField, InputAdornment, Avatar, Card,
   CardContent, Grid, Dialog, DialogTitle, DialogContent, DialogActions,
-  Button, Divider, LinearProgress, keyframes
+  Button, Divider, LinearProgress, keyframes, Alert
 } from '@mui/material';
 import {
   Visibility, Search, History as HistoryIcon, Download, Delete,
@@ -128,7 +130,7 @@ const generateTransactionPDF = (transaction) => {
   }
 };
 
-// Transaction Detail Modal
+// Transaction Detail Modal - FIXED VERSION
 const TransactionDetailModal = ({ open, onClose, transaction }) => {
   if (!transaction) return null;
   

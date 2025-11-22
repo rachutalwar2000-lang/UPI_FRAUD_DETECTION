@@ -1,14 +1,19 @@
 // web_app/client/src/App.js
 import React, { useState, useEffect, useMemo } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { CssBaseline, ThemeProvider, createTheme, Box } from '@mui/material';
+import { CssBaseline, ThemeProvider, createTheme, Box, Container } from '@mui/material';
 
 import Login from './components/Login';
 import Register from './components/Register';
+import ForgotPassword from './components/ForgotPassword';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
 import TransactionForm from './components/TransactionForm';
 import History from './components/History';
+import Analytics from './components/Analytics';
+import BatchProcessing from './components/BatchProcessing';
+import Profile from './components/Profile';
+
 
 // UPI Shield Theme Configuration
 const getTheme = (mode) => createTheme({
@@ -97,7 +102,6 @@ const PublicRoute = ({ children }) => {
   if (token) return <Navigate to="/dashboard" replace />;
   return children;
 };
-
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
@@ -122,6 +126,9 @@ function App() {
           <Route path="/register" element={
             <PublicRoute><Register /></PublicRoute>
           } />
+          <Route path="/forgot-password" element={
+            <PublicRoute><ForgotPassword /></PublicRoute>
+          } />
 
           {/* Protected Routes */}
           <Route path="/dashboard" element={
@@ -145,7 +152,27 @@ function App() {
               </Layout>
             </ProtectedRoute>
           } />
-
+          <Route path="/analytics" element={
+            <ProtectedRoute>
+              <Layout darkMode={darkMode} setDarkMode={setDarkMode}>
+                <Analytics />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/batch" element={
+            <ProtectedRoute>
+              <Layout darkMode={darkMode} setDarkMode={setDarkMode}>
+                <BatchProcessing />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Layout darkMode={darkMode} setDarkMode={setDarkMode}>
+                <Profile />
+              </Layout>
+            </ProtectedRoute>
+          } />
           {/* Redirect root to dashboard or login */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

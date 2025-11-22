@@ -46,40 +46,89 @@ const BatchProcessing = () => {
       try {
         const text = e.target.result;
         const lines = text.split('\n').filter(line => line.trim());
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-
-        // Validate required columns
-        const requiredCols = ['amount', 'senderupiid', 'receiverupiid'];
-        const missingCols = requiredCols.filter(col => 
-          !headers.some(h => h.includes(col.replace('upiid', '')) || h.includes(col))
-        );
-
-        if (missingCols.length > 0) {
-          setError(`Missing required columns: ${missingCols.join(', ')}`);
+        
+        if (lines.length < 2) {
+          setError('CSV file is empty or has no data rows');
           return;
         }
 
+        // Parse headers - handle different formats
+        const headerLine = lines[0].toLowerCase();
+        const headers = headerLine.split(',').map(h => h.trim().replace(/"/g, ''));
+
+        console.log('CSV Headers:', headers);
+
+        // Map common column name variations
+        const columnMap = {
+          amount: headers.findIndex(h => 
+            h.includes('amount') || h.includes('amt') || h.includes('value')
+          ),
+          sender: headers.findIndex(h => 
+            h.includes('sender') || h.includes('from') || h.includes('payer')
+          ),
+          receiver: headers.findIndex(h => 
+            h.includes('receiver') || h.includes('to') || h.includes('payee') || h.includes('recipient')
+          ),
+          type: headers.findIndex(h => 
+            h.includes('type') || h.includes('category')
+          ),
+          device: headers.findIndex(h => 
+            h.includes('device') || h.includes('deviceid')
+          ),
+          location: headers.findIndex(h => 
+            h.includes('location') || h.includes('loc')
+          )
+        };
+
+        console.log('Column mapping:', columnMap);
+
+        // Validate required columns
+        if (columnMap.amount === -1) {
+          setError('Missing required column: Amount (or similar)');
+          return;
+        }
+        if (columnMap.sender === -1) {
+          setError('Missing required column: Sender/From (or similar)');
+          return;
+        }
+        if (columnMap.receiver === -1) {
+          setError('Missing required column: Receiver/To (or similar)');
+          return;
+        }
+
+        // Parse data rows
         const data = lines.slice(1).map((line, index) => {
           const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
-          const row = {};
-          headers.forEach((header, i) => {
-            row[header] = values[i] || '';
-          });
+          
           return {
             id: index + 1,
-            amount: row.amount || row.amt || '',
-            senderUpiId: row.senderupiid || row.sender || row.from || '',
-            receiverUpiId: row.receiverupiid || row.receiver || row.to || '',
-            transactionType: row.type || row.transactiontype || 'P2P',
-            deviceId: row.deviceid || row.device || '',
-            location: row.location || row.loc || ''
+            amount: values[columnMap.amount] || '',
+            senderUpiId: values[columnMap.sender] || '',
+            receiverUpiId: values[columnMap.receiver] || '',
+            transactionType: values[columnMap.type] || 'P2P',
+            deviceId: values[columnMap.device] || '',
+            location: values[columnMap.location] || ''
           };
-        }).filter(row => row.amount && row.senderUpiId && row.receiverUpiId);
+        }).filter(row => {
+          // Filter out empty rows and validate data
+          const hasAmount = row.amount && !isNaN(parseFloat(row.amount));
+          const hasSender = row.senderUpiId && row.senderUpiId.length > 0;
+          const hasReceiver = row.receiverUpiId && row.receiverUpiId.length > 0;
+          return hasAmount && hasSender && hasReceiver;
+        });
+
+        console.log('Parsed data:', data);
+
+        if (data.length === 0) {
+          setError('No valid transactions found in CSV. Please check the format.');
+          return;
+        }
 
         setParsedData(data);
         setStep(1);
       } catch (err) {
-        setError('Failed to parse CSV file');
+        console.error('CSV parsing error:', err);
+        setError('Failed to parse CSV file. Please check the format.');
       }
     };
     reader.readAsText(uploadedFile);
@@ -101,7 +150,14 @@ const BatchProcessing = () => {
       try {
         const response = await axios.post(
           'http://localhost:5001/api/detect',
-          transaction,
+          {
+            amount: parseFloat(transaction.amount),
+            senderUpiId: transaction.senderUpiId,
+            receiverUpiId: transaction.receiverUpiId,
+            transactionType: transaction.transactionType || 'P2P',
+            deviceId: transaction.deviceId,
+            location: transaction.location
+          },
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -111,6 +167,7 @@ const BatchProcessing = () => {
           status: 'success'
         });
       } catch (err) {
+        console.error('Error processing transaction:', err);
         processedResults.push({
           ...transaction,
           result: null,
@@ -238,7 +295,7 @@ const BatchProcessing = () => {
             Upload CSV File
           </Typography>
           <Typography color="text.secondary" mb={3}>
-            File should contain: amount, senderUpiId, receiverUpiId
+            Required columns: Amount, Sender (From/Payer), Receiver (To/Payee)
           </Typography>
           <Button
             variant="contained"
@@ -255,7 +312,7 @@ const BatchProcessing = () => {
               CSV Format Example:
             </Typography>
             <Typography variant="caption" fontFamily="monospace" component="pre" textAlign="left">
-              amount,senderUpiId,receiverUpiId,transactionType{'\n'}
+              Amount,Sender,Receiver,Type{'\n'}
               5000,john@paytm,store@gpay,P2M{'\n'}
               15000,user@phonepe,merchant@upi,P2P
             </Typography>

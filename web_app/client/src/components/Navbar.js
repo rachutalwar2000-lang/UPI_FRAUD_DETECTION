@@ -3,16 +3,14 @@ import React, { useState } from 'react';
 import {
   AppBar, Toolbar, Typography, Button, Box, Avatar, Menu, MenuItem,
   Divider, IconButton, Drawer, List, ListItem, ListItemIcon,
-  ListItemText, useMediaQuery, useTheme, Tooltip
+  ListItemText, useMediaQuery, useTheme
 } from '@mui/material';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   Shield, Dashboard, Analytics as AnalyticsIcon, History, ExitToApp, Person,
-  Menu as MenuIcon, DarkMode, LightMode, Settings, Help,
-  CloudUpload, Assessment, AdminPanelSettings, TrendingUp
+  Menu as MenuIcon, CloudUpload, Assessment, AdminPanelSettings, TrendingUp
 } from '@mui/icons-material';
 import NotificationCenter from './NotificationCenter';
-import ReportGenerator from './ReportGenerator';
 
 const Navbar = ({ darkMode, setDarkMode }) => {
   const navigate = useNavigate();
@@ -22,7 +20,6 @@ const Navbar = ({ darkMode, setDarkMode }) => {
   
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [reportOpen, setReportOpen] = useState(false);
   
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -85,14 +82,6 @@ const Navbar = ({ darkMode, setDarkMode }) => {
         >
           <ListItemIcon sx={{ color: 'white', minWidth: 40 }}><Person /></ListItemIcon>
           <ListItemText primary="Profile" sx={{ color: 'white' }} />
-        </ListItem>
-        
-        <ListItem
-          onClick={() => { setReportOpen(true); setMobileOpen(false); }}
-          sx={{ borderRadius: 2, mb: 1, cursor: 'pointer', '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}
-        >
-          <ListItemIcon sx={{ color: 'white', minWidth: 40 }}><AnalyticsIcon /></ListItemIcon>
-          <ListItemText primary="Generate Report" sx={{ color: 'white' }} />
         </ListItem>
       </List>
 
@@ -170,24 +159,6 @@ const Navbar = ({ darkMode, setDarkMode }) => {
 
           {/* Right Side Actions */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            {/* Report Generator */}
-            {!isMobile && (
-              <Tooltip title="Generate Report">
-                <IconButton color="inherit" onClick={() => setReportOpen(true)}>
-                  <AnalyticsIcon />
-                </IconButton>
-              </Tooltip>
-            )}
-
-            {/* Dark Mode Toggle */}
-            {setDarkMode && (
-              <Tooltip title={darkMode ? 'Light Mode' : 'Dark Mode'}>
-                <IconButton color="inherit" onClick={() => setDarkMode(!darkMode)}>
-                  {darkMode ? <LightMode /> : <DarkMode />}
-                </IconButton>
-              </Tooltip>
-            )}
-
             {/* Notifications */}
             <NotificationCenter />
 
@@ -245,23 +216,12 @@ const Navbar = ({ darkMode, setDarkMode }) => {
           <ListItemIcon><TrendingUp fontSize="small" /></ListItemIcon>
           Analytics
         </MenuItem>
-        <MenuItem onClick={() => { setAnchorEl(null); }}>
-          <ListItemIcon><Settings fontSize="small" /></ListItemIcon>
-          Settings
-        </MenuItem>
-        <MenuItem onClick={() => { setAnchorEl(null); }}>
-          <ListItemIcon><Help fontSize="small" /></ListItemIcon>
-          Help
-        </MenuItem>
         <Divider />
         <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
           <ListItemIcon><ExitToApp fontSize="small" color="error" /></ListItemIcon>
           Logout
         </MenuItem>
       </Menu>
-
-      {/* Report Generator Dialog */}
-      <ReportGenerator open={reportOpen} onClose={() => setReportOpen(false)} />
     </>
   );
 };

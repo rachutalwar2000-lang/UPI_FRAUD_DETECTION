@@ -1,4 +1,4 @@
-// web_app/client/src/components/Analytics.js
+// web_app/client/src/components/Analytics.js - FIXED VERSION
 import React, { useState, useEffect } from 'react';
 import {
   Box, Grid, Paper, Typography, Card, CardContent, Avatar,
@@ -9,25 +9,25 @@ import {
   BarChart as BarChartIcon, ShowChart, CalendarMonth
 } from '@mui/icons-material';
 
-// Simple Chart Components (no external library needed)
+// Simple Chart Components
 const SimpleBarChart = ({ data, color }) => {
   const maxValue = Math.max(...data.map(d => d.value), 1);
   return (
-    <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 1, height: 200, pt: 2 }}>
+    <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.5, height: 160, pt: 2 }}>
       {data.map((item, index) => (
         <Box key={index} sx={{ flex: 1, textAlign: 'center' }}>
           <Box
             sx={{
-              height: `${(item.value / maxValue) * 150}px`,
+              height: `${(item.value / maxValue) * 120}px`,
               minHeight: 4,
               bgcolor: item.fill || color,
               borderRadius: '4px 4px 0 0',
               transition: 'height 0.5s ease',
               mx: 'auto',
-              width: '80%'
+              width: '85%'
             }}
           />
-          <Typography variant="caption" sx={{ fontSize: 10, mt: 0.5, display: 'block' }}>
+          <Typography variant="caption" sx={{ fontSize: 9, mt: 0.5, display: 'block' }}>
             {item.name}
           </Typography>
           <Typography variant="caption" fontWeight="bold" sx={{ fontSize: 10 }}>
@@ -44,8 +44,8 @@ const SimplePieChart = ({ data }) => {
   let currentAngle = 0;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 2 }}>
-      <svg width="200" height="200" viewBox="0 0 200 200">
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 1 }}>
+      <svg width="160" height="160" viewBox="0 0 200 200">
         {data.map((item, index) => {
           const angle = (item.value / total) * 360;
           const startAngle = currentAngle;
@@ -74,11 +74,11 @@ const SimplePieChart = ({ data }) => {
           {total}
         </text>
       </svg>
-      <Box sx={{ display: 'flex', gap: 2, mt: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+      <Box sx={{ display: 'flex', gap: 1.5, mt: 1.5, flexWrap: 'wrap', justifyContent: 'center' }}>
         {data.map((item, index) => (
           <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: item.color }} />
-            <Typography variant="caption">{item.name}: {item.value}</Typography>
+            <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: item.color }} />
+            <Typography variant="caption" sx={{ fontSize: 11 }}>{item.name}: {item.value}</Typography>
           </Box>
         ))}
       </Box>
@@ -95,35 +95,40 @@ const SimpleLineChart = ({ data, color }) => {
   const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
 
   return (
-    <Box sx={{ p: 2 }}>
-      <svg width="100%" height="200" viewBox="0 0 100 120" preserveAspectRatio="none">
+    <Box sx={{ p: 1.5 }}>
+      <svg width="100%" height="160" viewBox="0 0 100 120" preserveAspectRatio="none">
         <path d={pathD} fill="none" stroke={color} strokeWidth="2" />
         {points.map((p, i) => (
           <circle key={i} cx={p.x} cy={p.y} r="3" fill={color} />
         ))}
       </svg>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
         {data.filter((_, i) => i % Math.ceil(data.length / 6) === 0).map((d, i) => (
-          <Typography key={i} variant="caption" sx={{ fontSize: 10 }}>{d.name}</Typography>
+          <Typography key={i} variant="caption" sx={{ fontSize: 9 }}>{d.name}</Typography>
         ))}
       </Box>
     </Box>
   );
 };
 
-// Stat Card
+// Compact Stat Card
 const StatCard = ({ icon: Icon, label, value, change, color }) => (
   <Card sx={{ height: '100%' }}>
-    <CardContent>
+    <CardContent sx={{ p: 2 }}>
       <Box display="flex" justifyContent="space-between" alignItems="flex-start">
         <Box>
-          <Typography variant="body2" color="text.secondary" gutterBottom>{label}</Typography>
-          <Typography variant="h4" fontWeight="bold">{value}</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: 12 }}>
+            {label}
+          </Typography>
+          <Typography variant="h5" fontWeight="bold">{value}</Typography>
           {change && (
             <Chip
-              size="small" label={change}
+              size="small"
+              label={change}
               sx={{ 
-                mt: 1, 
+                mt: 0.5,
+                height: 20,
+                fontSize: 10,
                 bgcolor: change.startsWith('+') ? '#e8f5e9' : '#ffebee', 
                 color: change.startsWith('+') ? '#2e7d32' : '#c62828',
                 fontWeight: 'bold'
@@ -131,8 +136,8 @@ const StatCard = ({ icon: Icon, label, value, change, color }) => (
             />
           )}
         </Box>
-        <Avatar sx={{ bgcolor: `${color}15`, color }}>
-          <Icon />
+        <Avatar sx={{ bgcolor: `${color}15`, color, width: 36, height: 36 }}>
+          <Icon sx={{ fontSize: 20 }} />
         </Avatar>
       </Box>
     </CardContent>
@@ -157,14 +162,12 @@ const Analytics = () => {
     setLoading(true);
     const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
 
-    // Filter by time range
     const now = Date.now();
     const ranges = { '24h': 86400000, '7d': 604800000, '30d': 2592000000, '90d': 7776000000 };
     const filtered = transactions.filter(t => 
       now - new Date(t.timestamp).getTime() < ranges[timeRange]
     );
 
-    // Calculate stats
     const fraudTx = filtered.filter(t => t.prediction === 'Fraud');
     const validTx = filtered.filter(t => t.prediction === 'Valid');
     const flaggedTx = filtered.filter(t => t.riskScore >= 40 && t.riskScore < 70);
@@ -180,7 +183,6 @@ const Analytics = () => {
       totalAmount: filtered.reduce((sum, t) => sum + parseFloat(t.details?.amount || 0), 0)
     });
 
-    // Distribution data for pie chart
     setChartData({
       distribution: [
         { name: 'Valid', value: validTx.length, color: '#2e7d32' },
@@ -188,16 +190,16 @@ const Analytics = () => {
         { name: 'Flagged', value: flaggedTx.length, color: '#ef6c00' }
       ],
       riskBreakdown: [
-        { name: '0-20%', value: filtered.filter(t => t.riskScore < 20).length, fill: '#4caf50' },
-        { name: '20-40%', value: filtered.filter(t => t.riskScore >= 20 && t.riskScore < 40).length, fill: '#8bc34a' },
-        { name: '40-60%', value: filtered.filter(t => t.riskScore >= 40 && t.riskScore < 60).length, fill: '#ffc107' },
-        { name: '60-80%', value: filtered.filter(t => t.riskScore >= 60 && t.riskScore < 80).length, fill: '#ff9800' },
-        { name: '80-100%', value: filtered.filter(t => t.riskScore >= 80).length, fill: '#f44336' }
+        { name: '0-20', value: filtered.filter(t => t.riskScore < 20).length, fill: '#4caf50' },
+        { name: '20-40', value: filtered.filter(t => t.riskScore >= 20 && t.riskScore < 40).length, fill: '#8bc34a' },
+        { name: '40-60', value: filtered.filter(t => t.riskScore >= 40 && t.riskScore < 60).length, fill: '#ffc107' },
+        { name: '60-80', value: filtered.filter(t => t.riskScore >= 60 && t.riskScore < 80).length, fill: '#ff9800' },
+        { name: '80-100', value: filtered.filter(t => t.riskScore >= 80).length, fill: '#f44336' }
       ],
       timeSeries: generateTimeSeries(filtered, timeRange)
     });
 
-    setTimeout(() => setLoading(false), 500);
+    setTimeout(() => setLoading(false), 300);
   };
 
   const generateTimeSeries = (transactions, range) => {
@@ -230,18 +232,18 @@ const Analytics = () => {
 
   if (loading) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Grid container spacing={3}>
+      <Box sx={{ p: 2 }}>
+        <Grid container spacing={2}>
           {[1, 2, 3, 4, 5, 6].map(i => (
             <Grid item xs={6} sm={4} md={2} key={i}>
-              <Skeleton variant="rounded" height={120} />
+              <Skeleton variant="rounded" height={100} />
             </Grid>
           ))}
           <Grid item xs={12} md={8}>
-            <Skeleton variant="rounded" height={350} />
+            <Skeleton variant="rounded" height={280} />
           </Grid>
           <Grid item xs={12} md={4}>
-            <Skeleton variant="rounded" height={350} />
+            <Skeleton variant="rounded" height={280} />
           </Grid>
         </Grid>
       </Box>
@@ -250,15 +252,15 @@ const Analytics = () => {
 
   return (
     <Box sx={{ p: 3, minHeight: 'calc(100vh - 64px)', bgcolor: '#f5f7fa' }}>
-      {/* Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4} flexWrap="wrap" gap={2}>
-        <Box display="flex" alignItems="center" gap={2}>
-          <Avatar sx={{ width: 50, height: 50, bgcolor: '#1a237e' }}>
-            <Assessment />
+      {/* Compact Header */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Box display="flex" alignItems="center" gap={1.5}>
+          <Avatar sx={{ width: 40, height: 40, bgcolor: '#1a237e' }}>
+            <Assessment sx={{ fontSize: 22 }} />
           </Avatar>
           <Box>
-            <Typography variant="h4" fontWeight="bold" color="#1a237e">Analytics</Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="h5" fontWeight="bold" color="#1a237e">Analytics</Typography>
+            <Typography variant="caption" color="text.secondary">
               Transaction insights and trends
             </Typography>
           </Box>
@@ -271,14 +273,14 @@ const Analytics = () => {
           size="small"
         >
           <ToggleButton value="24h">24h</ToggleButton>
-          <ToggleButton value="7d">7 Days</ToggleButton>
-          <ToggleButton value="30d">30 Days</ToggleButton>
-          <ToggleButton value="90d">90 Days</ToggleButton>
+          <ToggleButton value="7d">7d</ToggleButton>
+          <ToggleButton value="30d">30d</ToggleButton>
+          <ToggleButton value="90d">90d</ToggleButton>
         </ToggleButtonGroup>
       </Box>
 
-      {/* Stats Cards */}
-      <Grid container spacing={2} mb={4}>
+      {/* Compact Stats Cards */}
+      <Grid container spacing={1.5} mb={2}>
         <Grid item xs={6} sm={4} md={2}>
           <StatCard icon={Assessment} label="Total" value={stats.total} color="#1a237e" />
         </Grid>
@@ -299,18 +301,18 @@ const Analytics = () => {
         </Grid>
       </Grid>
 
-      {/* Charts */}
-      <Grid container spacing={3}>
+      {/* Compact Charts */}
+      <Grid container spacing={2}>
         {/* Transaction Trends */}
-        <Grid item xs={12} lg={8}>
-          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid #e0e0e0' }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              <Timeline sx={{ mr: 1, verticalAlign: 'middle' }} />
+        <Grid item xs={12} lg={7.5}>
+          <Paper elevation={0} sx={{ p: 2, borderRadius: 2, border: '1px solid #e0e0e0' }}>
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ fontSize: 14 }}>
+              <Timeline sx={{ mr: 0.5, verticalAlign: 'middle', fontSize: 18 }} />
               Transaction Trends
             </Typography>
             {stats.total === 0 ? (
-              <Box textAlign="center" py={8}>
-                <Typography color="text.secondary">No data available for this period</Typography>
+              <Box textAlign="center" py={6}>
+                <Typography color="text.secondary" variant="body2">No data available</Typography>
               </Box>
             ) : (
               <SimpleLineChart data={chartData.timeSeries} color="#1a237e" />
@@ -320,14 +322,14 @@ const Analytics = () => {
 
         {/* Distribution Pie Chart */}
         <Grid item xs={12} lg={4}>
-          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid #e0e0e0', height: '100%' }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              <PieChartIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
-              Status Distribution
+          <Paper elevation={0} sx={{ p: 2, borderRadius: 2, border: '1px solid #e0e0e0', height: '100%' }}>
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ fontSize: 14 }}>
+              <PieChartIcon sx={{ mr: 0.5, verticalAlign: 'middle', fontSize: 18 }} />
+              Distribution
             </Typography>
             {stats.total === 0 ? (
-              <Box textAlign="center" py={8}>
-                <Typography color="text.secondary">No data available</Typography>
+              <Box textAlign="center" py={6}>
+                <Typography color="text.secondary" variant="body2">No data</Typography>
               </Box>
             ) : (
               <SimplePieChart data={chartData.distribution} />
@@ -336,15 +338,15 @@ const Analytics = () => {
         </Grid>
 
         {/* Risk Score Breakdown */}
-        <Grid item xs={12} md={6}>
-          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid #e0e0e0' }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              <BarChartIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+        <Grid item xs={12} md={7}>
+          <Paper elevation={0} sx={{ p: 2, borderRadius: 2, border: '1px solid #e0e0e0' }}>
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ fontSize: 14 }}>
+              <BarChartIcon sx={{ mr: 0.5, verticalAlign: 'middle', fontSize: 18 }} />
               Risk Score Distribution
             </Typography>
             {stats.total === 0 ? (
-              <Box textAlign="center" py={8}>
-                <Typography color="text.secondary">No data available</Typography>
+              <Box textAlign="center" py={6}>
+                <Typography color="text.secondary" variant="body2">No data</Typography>
               </Box>
             ) : (
               <SimpleBarChart data={chartData.riskBreakdown} color="#1a237e" />
@@ -353,36 +355,36 @@ const Analytics = () => {
         </Grid>
 
         {/* Summary Card */}
-        <Grid item xs={12} md={6}>
-          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid #e0e0e0', height: '100%' }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              <CalendarMonth sx={{ mr: 1, verticalAlign: 'middle' }} />
+        <Grid item xs={12} md={5}>
+          <Paper elevation={0} sx={{ p: 2, borderRadius: 2, border: '1px solid #e0e0e0', height: '100%' }}>
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ fontSize: 14 }}>
+              <CalendarMonth sx={{ mr: 0.5, verticalAlign: 'middle', fontSize: 18 }} />
               Period Summary
             </Typography>
-            <Box sx={{ mt: 3 }}>
-              <Grid container spacing={2}>
+            <Box sx={{ mt: 2 }}>
+              <Grid container spacing={1.5}>
                 <Grid item xs={6}>
-                  <Box sx={{ p: 2, bgcolor: '#e8f5e9', borderRadius: 2, textAlign: 'center' }}>
-                    <Typography variant="h4" fontWeight="bold" color="#2e7d32">
+                  <Box sx={{ p: 1.5, bgcolor: '#e8f5e9', borderRadius: 1.5, textAlign: 'center' }}>
+                    <Typography variant="h5" fontWeight="bold" color="#2e7d32">
                       {stats.total > 0 ? ((stats.valid / stats.total) * 100).toFixed(0) : 0}%
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">Success Rate</Typography>
+                    <Typography variant="caption" color="text.secondary">Success Rate</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={6}>
-                  <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 2, textAlign: 'center' }}>
-                    <Typography variant="h4" fontWeight="bold" color="#c62828">
+                  <Box sx={{ p: 1.5, bgcolor: '#ffebee', borderRadius: 1.5, textAlign: 'center' }}>
+                    <Typography variant="h5" fontWeight="bold" color="#c62828">
                       {stats.total > 0 ? ((stats.fraud / stats.total) * 100).toFixed(0) : 0}%
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">Fraud Rate</Typography>
+                    <Typography variant="caption" color="text.secondary">Fraud Rate</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={12}>
-                  <Box sx={{ p: 2, bgcolor: '#e3f2fd', borderRadius: 2, textAlign: 'center' }}>
-                    <Typography variant="h4" fontWeight="bold" color="#1565c0">
+                  <Box sx={{ p: 1.5, bgcolor: '#e3f2fd', borderRadius: 1.5, textAlign: 'center' }}>
+                    <Typography variant="h5" fontWeight="bold" color="#1565c0">
                       ₹{(stats.totalAmount / 1000).toFixed(1)}K
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">Total Volume Analyzed</Typography>
+                    <Typography variant="caption" color="text.secondary">Total Volume</Typography>
                   </Box>
                 </Grid>
               </Grid>

@@ -1,4 +1,4 @@
-// web_app/client/src/components/Dashboard.js
+// web_app/client/src/components/Dashboard.js - FULL WIDTH VERSION
 import React, { useState, useEffect } from 'react';
 import {
   Grid, Card, CardContent, Typography, Box, Button, LinearProgress,
@@ -18,21 +18,6 @@ const fadeInUp = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `;
 
-const pulseGlow = keyframes`
-  0%, 100% { box-shadow: 0 0 20px currentColor; }
-  50% { box-shadow: 0 0 40px currentColor; }
-`;
-
-const shimmer = keyframes`
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-`;
-
-const breathe = keyframes`
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-`;
-
 // Stat Card Component
 const StatCard = ({ title, value, icon: Icon, gradient, subtitle, trend, trendUp, delay = 0, onClick }) => (
   <Card
@@ -49,7 +34,6 @@ const StatCard = ({ title, value, icon: Icon, gradient, subtitle, trend, trendUp
       },
     }}
   >
-    {/* Decorative Circle */}
     <Box sx={{
       position: 'absolute', top: -30, right: -30,
       width: 120, height: 120, borderRadius: '50%',
@@ -250,14 +234,14 @@ const Dashboard = () => {
 
       {/* Stats Cards */}
       <Grid container spacing={3} mb={4}>
-        <Grid item xs={12} sm={6} lg={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Total Analyzed" value={loading ? '...' : stats.totalTransactions}
             icon={Assessment} gradient="linear-gradient(135deg, #1a237e 0%, #3949ab 100%)"
             subtitle="All time transactions" trend="+12%" trendUp delay={0}
           />
         </Grid>
-        <Grid item xs={12} sm={6} lg={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Fraud Blocked" value={loading ? '...' : stats.fraudulent}
             icon={Warning} gradient="linear-gradient(135deg, #c62828 0%, #ef5350 100%)"
@@ -265,14 +249,14 @@ const Dashboard = () => {
             onClick={() => navigate('/history')}
           />
         </Grid>
-        <Grid item xs={12} sm={6} lg={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Flagged Review" value={loading ? '...' : stats.flagged}
             icon={Security} gradient="linear-gradient(135deg, #ef6c00 0%, #ffa726 100%)"
             subtitle="Needs verification" trend="+3%" trendUp delay={0.2}
           />
         </Grid>
-        <Grid item xs={12} sm={6} lg={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Amount Protected" value={loading ? '...' : `₹${(parseInt(stats.fraudPrevented) / 1000).toFixed(0)}K`}
             icon={CurrencyRupee} gradient="linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%)"
@@ -284,7 +268,7 @@ const Dashboard = () => {
       {/* Main Content */}
       <Grid container spacing={3}>
         {/* Model Performance */}
-        <Grid item xs={12} lg={8}>
+        <Grid item xs={12} lg={7}>
           <Paper elevation={0} sx={{ p: 4, borderRadius: 3, bgcolor: 'white', border: '1px solid #e0e0e0' }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
               <Box display="flex" alignItems="center" gap={2}>
@@ -317,7 +301,7 @@ const Dashboard = () => {
         </Grid>
 
         {/* Recent Activity */}
-        <Grid item xs={12} lg={4}>
+        <Grid item xs={12} lg={5}>
           <Paper elevation={0} sx={{ p: 3, borderRadius: 3, bgcolor: 'white', border: '1px solid #e0e0e0', height: '100%' }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
               <Typography variant="h6" fontWeight="bold">Recent Activity</Typography>
