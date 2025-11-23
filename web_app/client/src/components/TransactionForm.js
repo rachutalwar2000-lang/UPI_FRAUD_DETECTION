@@ -148,8 +148,7 @@ const ResultDialog = ({ open, onClose, result }) => {
       </DialogContent>
 
       <DialogActions sx={{ p: 3, gap: 1, bgcolor: '#f5f7fa' }}>
-        <Button startIcon={<Download />} variant="outlined">Export Report</Button>
-        <Button startIcon={<Share />} variant="outlined">Share</Button>
+        
         <Button onClick={onClose} variant="contained" sx={{ background: 'linear-gradient(45deg, #1a237e, #3949ab)' }}>Close</Button>
       </DialogActions>
     </Dialog>
