@@ -1,4 +1,4 @@
-// web_app/client/src/components/Dashboard.js - FULL WIDTH VERSION
+// web_app/client/src/components/Dashboard.js - FIXED FULL WIDTH v2
 import React, { useState, useEffect } from 'react';
 import {
   Grid, Card, CardContent, Typography, Box, Button, LinearProgress,
@@ -7,12 +7,10 @@ import {
 import {
   TrendingUp, Warning, CheckCircle, CurrencyRupee, Assessment,
   Security, Refresh, ArrowUpward, ArrowDownward, Speed, Shield,
-  Notifications, Analytics, AccountBalance, Timeline, GppGood,
-  GppBad, GppMaybe
+  Analytics, Timeline, GppGood, GppBad, GppMaybe
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
-// Animations
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
@@ -24,61 +22,31 @@ const StatCard = ({ title, value, icon: Icon, gradient, subtitle, trend, trendUp
     onClick={onClick}
     sx={{
       height: '100%', cursor: onClick ? 'pointer' : 'default',
-      background: gradient,
-      color: 'white', position: 'relative', overflow: 'hidden',
+      background: gradient, color: 'white', position: 'relative', overflow: 'hidden',
       animation: `${fadeInUp} 0.6s ease-out ${delay}s both`,
       transition: 'all 0.3s ease',
-      '&:hover': {
-        transform: 'translateY(-8px) scale(1.02)',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-      },
+      '&:hover': { transform: 'translateY(-5px)', boxShadow: '0 15px 35px rgba(0,0,0,0.2)' },
     }}
   >
-    <Box sx={{
-      position: 'absolute', top: -30, right: -30,
-      width: 120, height: 120, borderRadius: '50%',
-      background: 'rgba(255,255,255,0.1)',
-    }} />
-    <Box sx={{
-      position: 'absolute', bottom: -20, left: -20,
-      width: 80, height: 80, borderRadius: '50%',
-      background: 'rgba(255,255,255,0.05)',
-    }} />
-
-    <CardContent sx={{ position: 'relative', zIndex: 1, p: 3 }}>
+    <Box sx={{ position: 'absolute', top: -20, right: -20, width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
+    <CardContent sx={{ position: 'relative', zIndex: 1, p: 2.5 }}>
       <Box display="flex" justifyContent="space-between" alignItems="flex-start">
         <Box>
-          <Typography variant="body2" sx={{ opacity: 0.9, fontWeight: 500, mb: 1 }}>
-            {title}
-          </Typography>
-          <Typography variant="h3" fontWeight="bold" sx={{ mb: 1 }}>
-            {value}
-          </Typography>
-          {subtitle && (
-            <Typography variant="caption" sx={{ opacity: 0.8 }}>
-              {subtitle}
-            </Typography>
-          )}
+          <Typography variant="body2" sx={{ opacity: 0.9, fontWeight: 500, mb: 0.5 }}>{title}</Typography>
+          <Typography variant="h4" fontWeight="bold">{value}</Typography>
+          {subtitle && <Typography variant="caption" sx={{ opacity: 0.8 }}>{subtitle}</Typography>}
         </Box>
-        <Avatar sx={{
-          bgcolor: 'rgba(255,255,255,0.2)', width: 56, height: 56,
-          backdropFilter: 'blur(10px)',
-        }}>
-          <Icon sx={{ fontSize: 30 }} />
+        <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 45, height: 45 }}>
+          <Icon sx={{ fontSize: 24 }} />
         </Avatar>
       </Box>
-
       {trend && (
-        <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ mt: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
           <Chip
             size="small"
-            icon={trendUp ? <ArrowUpward sx={{ fontSize: 14 }} /> : <ArrowDownward sx={{ fontSize: 14 }} />}
+            icon={trendUp ? <ArrowUpward sx={{ fontSize: 12 }} /> : <ArrowDownward sx={{ fontSize: 12 }} />}
             label={trend}
-            sx={{
-              bgcolor: 'rgba(255,255,255,0.2)', color: 'white',
-              '& .MuiChip-icon': { color: 'white' },
-              fontWeight: 600,
-            }}
+            sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white', '& .MuiChip-icon': { color: 'white' }, fontWeight: 600, height: 24 }}
           />
           <Typography variant="caption" sx={{ opacity: 0.8 }}>vs last week</Typography>
         </Box>
@@ -90,7 +58,6 @@ const StatCard = ({ title, value, icon: Icon, gradient, subtitle, trend, trendUp
 // Metric Progress Component
 const MetricProgress = ({ title, value, target, color, icon: Icon, delay = 0 }) => {
   const [progress, setProgress] = useState(0);
-
   useEffect(() => {
     const timer = setTimeout(() => setProgress(parseInt(value)), delay * 1000);
     return () => clearTimeout(timer);
@@ -98,30 +65,18 @@ const MetricProgress = ({ title, value, target, color, icon: Icon, delay = 0 }) 
 
   return (
     <Box sx={{ animation: `${fadeInUp} 0.6s ease-out ${delay}s both` }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
         <Box display="flex" alignItems="center" gap={1}>
-          <Icon sx={{ fontSize: 20, color }} />
-          <Typography variant="body2" fontWeight="600" color="text.secondary">
-            {title}
-          </Typography>
+          <Icon sx={{ fontSize: 18, color }} />
+          <Typography variant="body2" fontWeight="600" color="text.secondary">{title}</Typography>
         </Box>
-        <Typography variant="h6" fontWeight="bold" sx={{ color }}>
-          {value}%
-        </Typography>
+        <Typography variant="h6" fontWeight="bold" sx={{ color }}>{value}%</Typography>
       </Box>
       <LinearProgress
         variant="determinate" value={progress}
-        sx={{
-          height: 10, borderRadius: 5, bgcolor: `${color}20`,
-          '& .MuiLinearProgress-bar': {
-            bgcolor: color, borderRadius: 5,
-            transition: 'transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
-          },
-        }}
+        sx={{ height: 8, borderRadius: 4, bgcolor: `${color}20`, '& .MuiLinearProgress-bar': { bgcolor: color, borderRadius: 4 } }}
       />
-      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-        Target: {target}%
-      </Typography>
+      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>Target: {target}%</Typography>
     </Box>
   );
 };
@@ -139,21 +94,17 @@ const ActivityItem = ({ type, amount, time, status }) => {
 
   return (
     <Box sx={{
-      display: 'flex', alignItems: 'center', gap: 2,
-      p: 2, borderRadius: 2, bgcolor: config.bg, mb: 1.5,
-      transition: 'all 0.2s ease',
-      '&:hover': { transform: 'translateX(5px)' },
+      display: 'flex', alignItems: 'center', gap: 2, p: 1.5, borderRadius: 2, bgcolor: config.bg, mb: 1,
+      transition: 'all 0.2s ease', '&:hover': { transform: 'translateX(5px)' },
     }}>
-      <Avatar sx={{ bgcolor: config.color, width: 40, height: 40 }}>
-        {config.icon}
-      </Avatar>
+      <Avatar sx={{ bgcolor: config.color, width: 36, height: 36 }}>{config.icon}</Avatar>
       <Box flex={1}>
         <Typography variant="body2" fontWeight="600">{type} Transaction</Typography>
         <Typography variant="caption" color="text.secondary">{time}</Typography>
       </Box>
       <Box textAlign="right">
         <Typography variant="body2" fontWeight="bold">₹{amount}</Typography>
-        <Chip label={status} size="small" sx={{ bgcolor: config.color, color: 'white', fontSize: 10 }} />
+        <Chip label={status} size="small" sx={{ bgcolor: config.color, color: 'white', fontSize: 10, height: 20 }} />
       </Box>
     </Box>
   );
@@ -162,10 +113,7 @@ const ActivityItem = ({ type, amount, time, status }) => {
 const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    totalTransactions: 0, fraudulent: 0, flagged: 0, valid: 0,
-    totalAmount: 0, fraudPrevented: 0
-  });
+  const [stats, setStats] = useState({ totalTransactions: 0, fraudulent: 0, flagged: 0, valid: 0, totalAmount: 0, fraudPrevented: 0 });
   const [recentActivity, setRecentActivity] = useState([]);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -173,47 +121,36 @@ const Dashboard = () => {
   const loadStats = () => {
     setLoading(true);
     const saved = JSON.parse(localStorage.getItem('transactions') || '[]');
-
     const fraudCount = saved.filter(t => t.prediction === 'Fraud').length;
     const flaggedCount = saved.filter(t => t.riskScore >= 40 && t.riskScore < 70).length;
     const validCount = saved.filter(t => t.prediction === 'Valid' && t.riskScore < 40).length;
     const totalAmount = saved.reduce((sum, t) => sum + parseFloat(t.details?.amount || 0), 0);
-    const fraudAmount = saved.filter(t => t.prediction === 'Fraud')
-      .reduce((sum, t) => sum + parseFloat(t.details?.amount || 0), 0);
+    const fraudAmount = saved.filter(t => t.prediction === 'Fraud').reduce((sum, t) => sum + parseFloat(t.details?.amount || 0), 0);
 
-    setStats({
-      totalTransactions: saved.length, fraudulent: fraudCount,
-      flagged: flaggedCount, valid: validCount,
-      totalAmount: totalAmount.toFixed(0),
-      fraudPrevented: fraudAmount.toFixed(0)
-    });
-
-    setRecentActivity(saved.slice(0, 5).map(t => ({
-      type: t.details?.transactionType || 'P2P',
-      amount: t.details?.amount || '0',
-      time: new Date(t.timestamp).toLocaleString(),
-      status: t.prediction
-    })));
-
+    setStats({ totalTransactions: saved.length, fraudulent: fraudCount, flagged: flaggedCount, valid: validCount, totalAmount: totalAmount.toFixed(0), fraudPrevented: fraudAmount.toFixed(0) });
+    setRecentActivity(saved.slice(0, 5).map(t => ({ type: t.details?.transactionType || 'P2P', amount: t.details?.amount || '0', time: new Date(t.timestamp).toLocaleString(), status: t.prediction })));
     setTimeout(() => setLoading(false), 500);
   };
 
   useEffect(() => { loadStats(); }, []);
 
-  const refreshData = () => {
-    loadStats();
-    setLastUpdated(new Date());
-  };
-
+  const refreshData = () => { loadStats(); setLastUpdated(new Date()); };
   const metrics = { accuracy: 97, precision: 95, recall: 92, f1Score: 93 };
 
   return (
-    <Box sx={{ p: 3, minHeight: 'calc(100vh - 64px)', bgcolor: '#f5f7fa' }}>
+    <Box sx={{ 
+      p: 3, 
+      minHeight: 'calc(100vh - 64px)', 
+      bgcolor: '#f5f7fa',
+      width: '100%',
+      maxWidth: '100%',
+      boxSizing: 'border-box'
+    }}>
       {/* Header */}
-      <Box mb={4} display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+      <Box mb={3} display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
         <Box>
           <Typography variant="h4" fontWeight="bold" color="#1a237e" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Shield sx={{ fontSize: 35 }} /> Dashboard
+            <Shield sx={{ fontSize: 32 }} /> Dashboard
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Welcome back, <strong>{user.username || 'User'}</strong> • Last updated: {lastUpdated.toLocaleTimeString()}
@@ -221,118 +158,101 @@ const Dashboard = () => {
         </Box>
         <Box display="flex" gap={2}>
           <Tooltip title="Refresh Data">
-            <IconButton onClick={refreshData} sx={{ bgcolor: 'white', boxShadow: 2 }}>
-              <Refresh />
-            </IconButton>
+            <IconButton onClick={refreshData} sx={{ bgcolor: 'white', boxShadow: 2 }}><Refresh /></IconButton>
           </Tooltip>
-          <Button variant="contained" startIcon={<Analytics />} onClick={() => navigate('/analyze')}
-            sx={{ background: 'linear-gradient(45deg, #1a237e, #3949ab)' }}>
+          <Button variant="contained" startIcon={<Analytics />} onClick={() => navigate('/analyze')} sx={{ background: 'linear-gradient(45deg, #1a237e, #3949ab)' }}>
             Analyze New
           </Button>
         </Box>
       </Box>
 
-      {/* Stats Cards */}
-      <Grid container spacing={3} mb={4}>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Total Analyzed" value={loading ? '...' : stats.totalTransactions}
-            icon={Assessment} gradient="linear-gradient(135deg, #1a237e 0%, #3949ab 100%)"
-            subtitle="All time transactions" trend="+12%" trendUp delay={0}
-          />
+      {/* Stats Cards - Full Width Row */}
+      <Grid container spacing={2} mb={3}>
+        <Grid item xs={6} sm={6} md={3} lg={3}>
+          <StatCard title="Total Analyzed" value={loading ? '...' : stats.totalTransactions} icon={Assessment} gradient="linear-gradient(135deg, #1a237e 0%, #3949ab 100%)" subtitle="All time" trend="+12%" trendUp delay={0} />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Fraud Blocked" value={loading ? '...' : stats.fraudulent}
-            icon={Warning} gradient="linear-gradient(135deg, #c62828 0%, #ef5350 100%)"
-            subtitle="Automatically blocked" trend="-8%" trendUp={false} delay={0.1}
-            onClick={() => navigate('/history')}
-          />
+        <Grid item xs={6} sm={6} md={3} lg={3}>
+          <StatCard title="Fraud Blocked" value={loading ? '...' : stats.fraudulent} icon={Warning} gradient="linear-gradient(135deg, #c62828 0%, #ef5350 100%)" subtitle="Blocked" trend="-8%" trendUp={false} delay={0.1} onClick={() => navigate('/history')} />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Flagged Review" value={loading ? '...' : stats.flagged}
-            icon={Security} gradient="linear-gradient(135deg, #ef6c00 0%, #ffa726 100%)"
-            subtitle="Needs verification" trend="+3%" trendUp delay={0.2}
-          />
+        <Grid item xs={6} sm={6} md={3} lg={3}>
+          <StatCard title="Flagged Review" value={loading ? '...' : stats.flagged} icon={Security} gradient="linear-gradient(135deg, #ef6c00 0%, #ffa726 100%)" subtitle="Needs review" trend="+3%" trendUp delay={0.2} />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Amount Protected" value={loading ? '...' : `₹${(parseInt(stats.fraudPrevented) / 1000).toFixed(0)}K`}
-            icon={CurrencyRupee} gradient="linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%)"
-            subtitle="Fraud prevented" trend="+25%" trendUp delay={0.3}
-          />
+        <Grid item xs={6} sm={6} md={3} lg={3}>
+          <StatCard title="Amount Protected" value={loading ? '...' : `₹${(parseInt(stats.fraudPrevented) / 1000).toFixed(0)}K`} icon={CurrencyRupee} gradient="linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%)" subtitle="Fraud prevented" trend="+25%" trendUp delay={0.3} />
         </Grid>
       </Grid>
 
-      {/* Main Content */}
-      <Grid container spacing={3}>
-        {/* Model Performance */}
-        <Grid item xs={12} lg={7}>
-          <Paper elevation={0} sx={{ p: 4, borderRadius: 3, bgcolor: 'white', border: '1px solid #e0e0e0' }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-              <Box display="flex" alignItems="center" gap={2}>
-                <Avatar sx={{ bgcolor: '#1a237e', width: 50, height: 50 }}>
-                  <Speed />
-                </Avatar>
-                <Box>
-                  <Typography variant="h6" fontWeight="bold">Model Performance</Typography>
-                  <Typography variant="body2" color="text.secondary">XGBoost Classifier • Real-time</Typography>
-                </Box>
+      {/* Main Content - USING FLEXBOX FOR FULL WIDTH */}
+      <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+        {/* Model Performance - Takes more space */}
+        <Paper elevation={0} sx={{ 
+          p: 3, 
+          borderRadius: 3, 
+          bgcolor: 'white', 
+          border: '1px solid #e0e0e0',
+          flex: { xs: '1 1 auto', md: '2 1 0' },
+          minWidth: 0
+        }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+            <Box display="flex" alignItems="center" gap={2}>
+              <Avatar sx={{ bgcolor: '#1a237e', width: 45, height: 45 }}><Speed /></Avatar>
+              <Box>
+                <Typography variant="h6" fontWeight="bold">Model Performance</Typography>
+                <Typography variant="body2" color="text.secondary">XGBoost Classifier • Real-time</Typography>
               </Box>
-              <Chip icon={<CheckCircle />} label="Operational" color="success" sx={{ fontWeight: 600 }} />
             </Box>
-
-            <Grid container spacing={4}>
-              <Grid item xs={12} sm={6}>
-                <MetricProgress title="Accuracy" value={metrics.accuracy} target={99} color="#1a237e" icon={Analytics} delay={0.4} />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <MetricProgress title="Precision" value={metrics.precision} target={98} color="#2e7d32" icon={GppGood} delay={0.5} />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <MetricProgress title="Recall" value={metrics.recall} target={95} color="#ef6c00" icon={Timeline} delay={0.6} />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <MetricProgress title="F1 Score" value={metrics.f1Score} target={96} color="#1565c0" icon={Assessment} delay={0.7} />
-              </Grid>
+            <Chip icon={<CheckCircle />} label="Operational" color="success" sx={{ fontWeight: 600 }} />
+          </Box>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6} md={6} lg={3}>
+              <MetricProgress title="Accuracy" value={metrics.accuracy} target={99} color="#1a237e" icon={Analytics} delay={0.4} />
             </Grid>
-          </Paper>
-        </Grid>
+            <Grid item xs={12} sm={6} md={6} lg={3}>
+              <MetricProgress title="Precision" value={metrics.precision} target={98} color="#2e7d32" icon={GppGood} delay={0.5} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={6} lg={3}>
+              <MetricProgress title="Recall" value={metrics.recall} target={95} color="#ef6c00" icon={Timeline} delay={0.6} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={6} lg={3}>
+              <MetricProgress title="F1 Score" value={metrics.f1Score} target={96} color="#1565c0" icon={Assessment} delay={0.7} />
+            </Grid>
+          </Grid>
+        </Paper>
 
         {/* Recent Activity */}
-        <Grid item xs={12} lg={5}>
-          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, bgcolor: 'white', border: '1px solid #e0e0e0', height: '100%' }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-              <Typography variant="h6" fontWeight="bold">Recent Activity</Typography>
-              <Button size="small" onClick={() => navigate('/history')}>View All</Button>
+        <Paper elevation={0} sx={{ 
+          p: 3, 
+          borderRadius: 3, 
+          bgcolor: 'white', 
+          border: '1px solid #e0e0e0',
+          flex: { xs: '1 1 auto', md: '1 1 0' },
+          minWidth: { xs: 'auto', md: 320 },
+          maxWidth: { xs: '100%', md: 400 }
+        }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Typography variant="h6" fontWeight="bold">Recent Activity</Typography>
+            <Button size="small" onClick={() => navigate('/history')}>View All</Button>
+          </Box>
+          {loading ? (
+            [...Array(5)].map((_, i) => <Skeleton key={i} variant="rounded" height={55} sx={{ mb: 1 }} />)
+          ) : recentActivity.length === 0 ? (
+            <Box textAlign="center" py={4}>
+              <Assessment sx={{ fontSize: 50, color: '#ccc', mb: 1 }} />
+              <Typography color="text.secondary" variant="body2">No transactions yet</Typography>
+              <Button variant="outlined" size="small" sx={{ mt: 2 }} onClick={() => navigate('/analyze')}>Analyze First Transaction</Button>
             </Box>
-
-            {loading ? (
-              [...Array(4)].map((_, i) => <Skeleton key={i} variant="rounded" height={60} sx={{ mb: 1.5 }} />)
-            ) : recentActivity.length === 0 ? (
-              <Box textAlign="center" py={4}>
-                <Assessment sx={{ fontSize: 60, color: '#ccc', mb: 2 }} />
-                <Typography color="text.secondary">No transactions yet</Typography>
-                <Button variant="outlined" sx={{ mt: 2 }} onClick={() => navigate('/analyze')}>
-                  Analyze First Transaction
-                </Button>
-              </Box>
-            ) : (
-              recentActivity.map((item, i) => <ActivityItem key={i} {...item} />)
-            )}
-          </Paper>
-        </Grid>
-      </Grid>
+          ) : (
+            recentActivity.map((item, i) => <ActivityItem key={i} {...item} />)
+          )}
+        </Paper>
+      </Box>
 
       {/* Quick Actions */}
-      <Box mt={4} display="flex" gap={2} flexWrap="wrap" sx={{ animation: `${fadeInUp} 0.8s ease-out 1s both` }}>
-        <Button variant="contained" size="large" startIcon={<Assessment />} onClick={() => navigate('/analyze')}
-          sx={{ background: 'linear-gradient(45deg, #1a237e, #3949ab)', px: 4 }}>
+      <Box mt={3} display="flex" gap={2} flexWrap="wrap">
+        <Button variant="contained" size="large" startIcon={<Assessment />} onClick={() => navigate('/analyze')} sx={{ background: 'linear-gradient(45deg, #1a237e, #3949ab)', px: 4 }}>
           Analyze Transaction
         </Button>
-        <Button variant="outlined" size="large" startIcon={<Timeline />} onClick={() => navigate('/history')}
-          sx={{ borderWidth: 2, '&:hover': { borderWidth: 2 } }}>
+        <Button variant="outlined" size="large" startIcon={<Timeline />} onClick={() => navigate('/history')} sx={{ borderWidth: 2, '&:hover': { borderWidth: 2 } }}>
           View History
         </Button>
       </Box>

@@ -1,4 +1,4 @@
-// web_app/client/src/components/Layout.js
+// web_app/client/src/components/Layout.js - FIXED FULL WIDTH
 import React from 'react';
 import { Box, useTheme } from '@mui/material';
 import Navbar from './Navbar';
@@ -17,7 +17,10 @@ const Layout = ({ children, darkMode, setDarkMode }) => {
         component="main" 
         sx={{ 
           minHeight: 'calc(100vh - 64px)',
-          // No padding here - let individual pages control their padding
+          width: '100%',
+          maxWidth: '100%',  /* IMPORTANT: Remove any max-width restriction */
+          margin: 0,
+          padding: 0,
         }}
       >
         {children}

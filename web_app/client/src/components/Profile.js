@@ -1,4 +1,4 @@
-// web_app/client/src/components/Profile.js - ENHANCED VERSION
+// web_app/client/src/components/Profile.js - FIXED LAYOUT VERSION
 import React, { useState, useEffect } from 'react';
 import {
   Box, Paper, Typography, TextField, Button, Avatar, Grid, Card,
@@ -14,20 +14,6 @@ import {
   Business, Language, Close
 } from '@mui/icons-material';
 import axios from 'axios';
-
-const StatCard = ({ icon: Icon, label, value, color }) => (
-  <Card sx={{ bgcolor: `${color}15`, border: `1px solid ${color}30`, height: '100%' }}>
-    <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 2 }}>
-      <Avatar sx={{ bgcolor: color, width: 48, height: 48 }}>
-        <Icon />
-      </Avatar>
-      <Box>
-        <Typography variant="h5" fontWeight="bold">{value}</Typography>
-        <Typography variant="caption" color="text.secondary">{label}</Typography>
-      </Box>
-    </CardContent>
-  </Card>
-);
 
 const Profile = () => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
@@ -84,7 +70,6 @@ const Profile = () => {
         setMessage({ type: 'error', text: 'Image size should be less than 2MB' });
         return;
       }
-      
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfilePhoto(reader.result);
@@ -98,13 +83,11 @@ const Profile = () => {
   const handleUpdateProfile = async () => {
     setLoading(true);
     try {
-      // Save additional fields to localStorage
       localStorage.setItem('fullName', formData.fullName);
       localStorage.setItem('phone', formData.phone);
       localStorage.setItem('location', formData.location);
       localStorage.setItem('organization', formData.organization);
 
-      // Update username and email via API
       const token = localStorage.getItem('token');
       const response = await axios.put(
         'http://localhost:5001/api/auth/profile',
@@ -137,10 +120,7 @@ const Profile = () => {
       const token = localStorage.getItem('token');
       await axios.put(
         'http://localhost:5001/api/auth/change-password',
-        {
-          currentPassword: formData.currentPassword,
-          newPassword: formData.newPassword
-        },
+        { currentPassword: formData.currentPassword, newPassword: formData.newPassword },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setMessage({ type: 'success', text: 'Password changed successfully!' });
@@ -178,11 +158,19 @@ const Profile = () => {
     : user.username || 'User');
 
   return (
-    <Box sx={{ p: 3, bgcolor: '#f5f7fa', minHeight: '100vh' }}>
-      <Grid container spacing={3}>
-        {/* Left Column - Profile Card */}
-        <Grid item xs={12} md={3.5}>
-          <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid #e0e0e0', textAlign: 'center' }}>
+    <Box sx={{ p: 3, bgcolor: '#f5f7fa', minHeight: 'calc(100vh - 64px)' }}>
+      <Box sx={{ display: 'flex', gap: 3, maxWidth: 1400, mx: 'auto' }}>
+        
+        {/* Left Column - Profile Card (STICKY) */}
+        <Box sx={{ 
+          width: 280, 
+          flexShrink: 0,
+          position: 'sticky',
+          top: 80,
+          alignSelf: 'flex-start',
+          height: 'fit-content'
+        }}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid #e0e0e0', textAlign: 'center' }}>
             {/* Profile Photo */}
             <Badge
               overlap="circular"
@@ -201,12 +189,12 @@ const Profile = () => {
                     sx={{
                       bgcolor: '#1a237e',
                       color: 'white',
-                      width: 40,
-                      height: 40,
+                      width: 32,
+                      height: 32,
                       '&:hover': { bgcolor: '#0d1421' }
                     }}
                   >
-                    <CameraAlt />
+                    <CameraAlt sx={{ fontSize: 16 }} />
                   </IconButton>
                 </label>
               }
@@ -214,51 +202,52 @@ const Profile = () => {
               <Avatar
                 src={profilePhoto}
                 sx={{
-                  width: 120,
-                  height: 120,
+                  width: 100,
+                  height: 100,
                   mx: 'auto',
-                  mb: 2,
                   bgcolor: '#1a237e',
-                  fontSize: 48,
+                  fontSize: 40,
                   fontWeight: 'bold',
-                  boxShadow: '0 8px 30px rgba(26,35,126,0.3)'
+                  boxShadow: '0 4px 20px rgba(26,35,126,0.3)'
                 }}
               >
                 {!profilePhoto && displayName.charAt(0).toUpperCase()}
               </Avatar>
             </Badge>
 
-            <Typography variant="h5" fontWeight="bold" gutterBottom>
+            <Typography variant="h6" fontWeight="bold" mt={2}>
               {displayName}
             </Typography>
             <Typography variant="body2" color="text.secondary" gutterBottom>
               {user.email || user.username}
             </Typography>
             
-            {user.role === 'admin' && (
-              <Chip icon={<Shield />} label="Administrator" color="primary" sx={{ mt: 1 }} />
-            )}
-            <Chip icon={<CheckCircle />} label="Verified" color="success" sx={{ mt: 1, ml: 1 }} />
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5, flexWrap: 'wrap', mt: 1 }}>
+              {user.role === 'admin' && (
+                <Chip icon={<Shield sx={{ fontSize: 14 }} />} label="Admin" color="primary" size="small" />
+              )}
+              <Chip icon={<CheckCircle sx={{ fontSize: 14 }} />} label="Verified" color="success" size="small" />
+            </Box>
 
-            <Divider sx={{ my: 3 }} />
+            <Divider sx={{ my: 2 }} />
 
-            {/* Additional Info */}
+            {/* Contact Info */}
             <Box sx={{ textAlign: 'left', mb: 2 }}>
               {formData.phone && (
                 <Box display="flex" alignItems="center" gap={1} mb={1}>
-                  <Phone sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Phone sx={{ fontSize: 16, color: 'text.secondary' }} />
                   <Typography variant="body2">{formData.phone}</Typography>
                 </Box>
               )}
               {formData.location && (
                 <Box display="flex" alignItems="center" gap={1} mb={1}>
-                  <LocationOn sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <LocationOn sx={{ fontSize: 16, color: 'text.secondary' }} />
                   <Typography variant="body2">{formData.location}</Typography>
                 </Box>
               )}
               {formData.organization && (
                 <Box display="flex" alignItems="center" gap={1} mb={1}>
-                  <Business sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  <Business sx={{ fontSize: 16, color: 'text.secondary' }} />
                   <Typography variant="body2">{formData.organization}</Typography>
                 </Box>
               )}
@@ -266,59 +255,50 @@ const Profile = () => {
 
             <Divider sx={{ my: 2 }} />
 
+            {/* Stats */}
             <Box display="flex" justifyContent="space-around" sx={{ textAlign: 'center' }}>
               <Box>
-                <Typography variant="h6" fontWeight="bold" color="primary">
-                  {stats.total}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Total Scans
-                </Typography>
+                <Typography variant="h6" fontWeight="bold" color="primary">{stats.total}</Typography>
+                <Typography variant="caption" color="text.secondary">Total Scans</Typography>
               </Box>
               <Box>
-                <Typography variant="h6" fontWeight="bold" color="error">
-                  {stats.fraud}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Fraud Blocked
-                </Typography>
+                <Typography variant="h6" fontWeight="bold" color="error">{stats.fraud}</Typography>
+                <Typography variant="caption" color="text.secondary">Fraud Blocked</Typography>
               </Box>
               <Box>
-                <Typography variant="h6" fontWeight="bold" color="success">
-                  {stats.valid}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Valid
-                </Typography>
+                <Typography variant="h6" fontWeight="bold" color="success">{stats.valid}</Typography>
+                <Typography variant="caption" color="text.secondary">Valid</Typography>
               </Box>
             </Box>
           </Paper>
 
-          {/* Quick Stats */}
-          <Grid container spacing={2} sx={{ mt: 2 }}>
+          {/* Quick Stats Cards */}
+          <Grid container spacing={1.5} sx={{ mt: 2 }}>
             <Grid item xs={6}>
-              <Card sx={{ bgcolor: '#e8f5e9', textAlign: 'center', p: 2 }}>
-                <Typography variant="h4" fontWeight="bold" color="#2e7d32">
+              <Card sx={{ bgcolor: '#e8f5e9', textAlign: 'center', p: 1.5 }}>
+                <Typography variant="h5" fontWeight="bold" color="#2e7d32">
                   {stats.total > 0 ? Math.round((stats.valid / stats.total) * 100) : 0}%
                 </Typography>
                 <Typography variant="caption" color="text.secondary">Success Rate</Typography>
               </Card>
             </Grid>
             <Grid item xs={6}>
-              <Card sx={{ bgcolor: '#fff3e0', textAlign: 'center', p: 2 }}>
-                <Typography variant="h4" fontWeight="bold" color="#ef6c00">
-                  {stats.flagged}
-                </Typography>
+              <Card sx={{ bgcolor: '#fff3e0', textAlign: 'center', p: 1.5 }}>
+                <Typography variant="h5" fontWeight="bold" color="#ef6c00">{stats.flagged}</Typography>
                 <Typography variant="caption" color="text.secondary">Flagged</Typography>
               </Card>
             </Grid>
           </Grid>
-        </Grid>
+        </Box>
 
-        {/* Right Column - Settings */}
-        <Grid item xs={12} md={8}>
+        {/* Right Column - Settings (EXPANDED) */}
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           <Paper elevation={0} sx={{ borderRadius: 3, border: '1px solid #e0e0e0' }}>
-            <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)} sx={{ borderBottom: '1px solid #e0e0e0', px: 2 }}>
+            <Tabs 
+              value={tabValue} 
+              onChange={(e, v) => setTabValue(v)} 
+              sx={{ borderBottom: '1px solid #e0e0e0', px: 2 }}
+            >
               <Tab icon={<Person />} label="Profile" iconPosition="start" />
               <Tab icon={<Lock />} label="Security" iconPosition="start" />
               <Tab icon={<Notifications />} label="Preferences" iconPosition="start" />
@@ -353,86 +333,50 @@ const Profile = () => {
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={6}>
                       <TextField
-                        fullWidth
-                        label="Full Name"
-                        name="fullName"
-                        value={formData.fullName}
-                        onChange={handleChange}
-                        disabled={!editing || loading}
-                        placeholder="Enter your full name"
-                        InputProps={{
-                          startAdornment: <InputAdornment position="start"><Person /></InputAdornment>
-                        }}
+                        fullWidth label="Full Name" name="fullName"
+                        value={formData.fullName} onChange={handleChange}
+                        disabled={!editing || loading} placeholder="Enter your full name"
+                        InputProps={{ startAdornment: <InputAdornment position="start"><Person /></InputAdornment> }}
                       />
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <TextField
-                        fullWidth
-                        label="Username"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleChange}
+                        fullWidth label="Username" name="username"
+                        value={formData.username} onChange={handleChange}
                         disabled={!editing || loading}
-                        InputProps={{
-                          startAdornment: <InputAdornment position="start"><Person /></InputAdornment>
-                        }}
+                        InputProps={{ startAdornment: <InputAdornment position="start"><Person /></InputAdornment> }}
                       />
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <TextField
-                        fullWidth
-                        label="Email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        disabled={!editing || loading}
-                        placeholder="your@email.com"
-                        InputProps={{
-                          startAdornment: <InputAdornment position="start"><Email /></InputAdornment>
-                        }}
+                        fullWidth label="Email" name="email" type="email"
+                        value={formData.email} onChange={handleChange}
+                        disabled={!editing || loading} placeholder="your@email.com"
+                        InputProps={{ startAdornment: <InputAdornment position="start"><Email /></InputAdornment> }}
                       />
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <TextField
-                        fullWidth
-                        label="Phone Number"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        disabled={!editing || loading}
-                        placeholder="+91 98765 43210"
-                        InputProps={{
-                          startAdornment: <InputAdornment position="start"><Phone /></InputAdornment>
-                        }}
+                        fullWidth label="Phone Number" name="phone"
+                        value={formData.phone} onChange={handleChange}
+                        disabled={!editing || loading} placeholder="+91 98765 43210"
+                        InputProps={{ startAdornment: <InputAdornment position="start"><Phone /></InputAdornment> }}
                       />
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <TextField
-                        fullWidth
-                        label="Location"
-                        name="location"
-                        value={formData.location}
-                        onChange={handleChange}
-                        disabled={!editing || loading}
-                        placeholder="City, Country"
-                        InputProps={{
-                          startAdornment: <InputAdornment position="start"><LocationOn /></InputAdornment>
-                        }}
+                        fullWidth label="Location" name="location"
+                        value={formData.location} onChange={handleChange}
+                        disabled={!editing || loading} placeholder="City, Country"
+                        InputProps={{ startAdornment: <InputAdornment position="start"><LocationOn /></InputAdornment> }}
                       />
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <TextField
-                        fullWidth
-                        label="Organization"
-                        name="organization"
-                        value={formData.organization}
-                        onChange={handleChange}
-                        disabled={!editing || loading}
-                        placeholder="Company or Institution"
-                        InputProps={{
-                          startAdornment: <InputAdornment position="start"><Business /></InputAdornment>
-                        }}
+                        fullWidth label="Organization" name="organization"
+                        value={formData.organization} onChange={handleChange}
+                        disabled={!editing || loading} placeholder="Company or Institution"
+                        InputProps={{ startAdornment: <InputAdornment position="start"><Business /></InputAdornment> }}
                       />
                     </Grid>
                   </Grid>
@@ -450,12 +394,9 @@ const Profile = () => {
                   <Grid container spacing={3}>
                     <Grid item xs={12}>
                       <TextField
-                        fullWidth
-                        label="Current Password"
-                        name="currentPassword"
+                        fullWidth label="Current Password" name="currentPassword"
                         type={showPassword ? 'text' : 'password'}
-                        value={formData.currentPassword}
-                        onChange={handleChange}
+                        value={formData.currentPassword} onChange={handleChange}
                         InputProps={{
                           startAdornment: <InputAdornment position="start"><Lock /></InputAdornment>,
                           endAdornment: (
@@ -470,30 +411,23 @@ const Profile = () => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <TextField
-                        fullWidth
-                        label="New Password"
-                        name="newPassword"
+                        fullWidth label="New Password" name="newPassword"
                         type={showPassword ? 'text' : 'password'}
-                        value={formData.newPassword}
-                        onChange={handleChange}
+                        value={formData.newPassword} onChange={handleChange}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <TextField
-                        fullWidth
-                        label="Confirm Password"
-                        name="confirmPassword"
+                        fullWidth label="Confirm Password" name="confirmPassword"
                         type={showPassword ? 'text' : 'password'}
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
+                        value={formData.confirmPassword} onChange={handleChange}
                         error={formData.confirmPassword && formData.newPassword !== formData.confirmPassword}
                         helperText={formData.confirmPassword && formData.newPassword !== formData.confirmPassword ? "Passwords don't match" : ''}
                       />
                     </Grid>
                     <Grid item xs={12}>
                       <Button
-                        variant="contained"
-                        onClick={handleChangePassword}
+                        variant="contained" onClick={handleChangePassword}
                         disabled={loading || !formData.currentPassword || !formData.newPassword}
                         startIcon={loading ? <CircularProgress size={20} /> : <Security />}
                       >
@@ -504,18 +438,11 @@ const Profile = () => {
 
                   <Divider sx={{ my: 4 }} />
 
-                  <Typography variant="h6" fontWeight="bold" color="error" gutterBottom>
-                    Danger Zone
-                  </Typography>
+                  <Typography variant="h6" fontWeight="bold" color="error" gutterBottom>Danger Zone</Typography>
                   <Typography variant="body2" color="text.secondary" mb={2}>
                     Once you delete your account, there is no going back.
                   </Typography>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    startIcon={<Delete />}
-                    onClick={() => setDeleteDialogOpen(true)}
-                  >
+                  <Button variant="outlined" color="error" startIcon={<Delete />} onClick={() => setDeleteDialogOpen(true)}>
                     Delete Account
                   </Button>
                 </Box>
@@ -524,38 +451,21 @@ const Profile = () => {
               {/* Preferences Tab */}
               {tabValue === 2 && (
                 <Box>
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>
-                    Notification Settings
-                  </Typography>
+                  <Typography variant="h6" fontWeight="bold" gutterBottom>Notification Settings</Typography>
                   <List>
                     <ListItem>
                       <ListItemIcon><Email /></ListItemIcon>
-                      <ListItemText
-                        primary="Email Notifications"
-                        secondary="Receive fraud alerts and reports via email"
-                      />
-                      <Switch
-                        checked={settings.emailNotifications}
-                        onChange={() => handleSettingChange('emailNotifications')}
-                      />
+                      <ListItemText primary="Email Notifications" secondary="Receive fraud alerts and reports via email" />
+                      <Switch checked={settings.emailNotifications} onChange={() => handleSettingChange('emailNotifications')} />
                     </ListItem>
                     <ListItem>
                       <ListItemIcon><Notifications /></ListItemIcon>
-                      <ListItemText
-                        primary="Push Notifications"
-                        secondary="Get instant browser notifications"
-                      />
-                      <Switch
-                        checked={settings.pushNotifications}
-                        onChange={() => handleSettingChange('pushNotifications')}
-                      />
+                      <ListItemText primary="Push Notifications" secondary="Get instant browser notifications" />
+                      <Switch checked={settings.pushNotifications} onChange={() => handleSettingChange('pushNotifications')} />
                     </ListItem>
                     <ListItem>
                       <ListItemIcon><Security /></ListItemIcon>
-                      <ListItemText
-                        primary="Two-Factor Authentication"
-                        secondary="Extra security layer (Coming soon)"
-                      />
+                      <ListItemText primary="Two-Factor Authentication" secondary="Extra security layer (Coming soon)" />
                       <Switch checked={settings.twoFactorAuth} disabled />
                     </ListItem>
                   </List>
@@ -563,14 +473,12 @@ const Profile = () => {
               )}
             </Box>
           </Paper>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       {/* Delete Account Dialog */}
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-        <DialogTitle sx={{ color: 'error.main' }}>
-          Delete Account?
-        </DialogTitle>
+        <DialogTitle sx={{ color: 'error.main' }}>Delete Account?</DialogTitle>
         <DialogContent>
           <Typography>
             This action cannot be undone. All your data, including transaction history, will be permanently deleted.
